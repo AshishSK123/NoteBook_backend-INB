@@ -85,7 +85,9 @@ Router.post('/signin',
 
         }
 
-        const { email, password } = req.body;
+        //destructure
+        const { email, password } = req.body;1
+
 
         try {
 
@@ -106,6 +108,7 @@ Router.post('/signin',
             if (!passswordCompare) {
                 return res.status(400).json({ error: "Please Enter valid credentials" })
             }
+
 
             //To generate token using user id and sign
             const userToken = jwt.sign(user.id, jwt_sign)

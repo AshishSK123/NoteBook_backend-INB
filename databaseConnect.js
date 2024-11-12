@@ -2,7 +2,7 @@
 const mongoose = require('mongoose')
 
 // mongoDB link
-const mongoURL = "mongodb://localhost:27017/notebook_DB"
+const mongoURL = "mongodb+srv://ashishskharat18:Ashishsk%4018@notebookapp.h9yir.mongodb.net/Notebook_DB"
 //function to connect mongoDB
 const connectToMongoose = ()=>{
     //mongoose.connect is used to build connection
