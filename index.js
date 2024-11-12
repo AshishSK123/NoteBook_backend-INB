@@ -6,6 +6,7 @@ connectToMongoose();
 
 const app = express()
 const port = 5000
+const ipAddress = "0.0.0.0"
 
 // to use request.body 
 app.use(express.json())
@@ -18,6 +19,6 @@ app.use('/api/Notes', require('./routes/notes'))
 
 
 // list the app on localhost
-app.listen(port, () => {
+app.listen(port,ipAddress, () => {
   console.log(`Example app listening on port  http://localhost:${port}`)
 })
