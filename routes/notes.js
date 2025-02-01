@@ -3,6 +3,12 @@ const Router = express.Router();
 const Notes = require('../model/Notes')
 const fetchuser = require('../middleware/fetchuser')
 const { body, validationResult } = require('express-validator');
+const { encrypt, decrypt } = require('n-krypta');
+const e = require('express');
+
+
+const secretkey = 'Ashishsk@18'
+
 
 //ROUTE 1; To fetch the user notes // using middleware function // using GET: api/Notes/Notesdata
 Router.get('/Notesdata', fetchuser, async (req, res) => {
@@ -10,10 +16,19 @@ Router.get('/Notesdata', fetchuser, async (req, res) => {
 
         //To fetch the user notes using user id recieved from middleware function
         const notes = await Notes.find({ user: req.user_id })
+        notes.forEach((note) => {
+
+            //To decrypt the data before sending to client side
+            const decrypted_title = decrypt(note.title, secretkey)
+            const decrypted_description = decrypt(note.description, secretkey)
+
+            note.title = decrypted_title
+            note.description = decrypted_description
+        })
         res.json(notes)
     } catch (error) {
 
-        // To display err
+        // To display error
         console.log(error)
         res.status(500).send("Please Try after some Time!")
     }
@@ -37,13 +52,18 @@ Router.post('/addnote', fetchuser, [
     const { title, description, tag } = req.body
     try {
 
+        //To encrypt the data before storing into database
+        const encrypted_description = encrypt(description, secretkey)
+        const encrypted_title = encrypt(title, secretkey)
+
         // To get the data from user for each field and store it  
         const note = new Notes({
-            title, description, tag, user: req.user_id
+            title: encrypted_title, description: encrypted_description, tag, user: req.user_id
         })
         // To save the data into database
         const savenote = await note.save()
 
+        // console.log(savenote)
         res.json(savenote)
     } catch (error) {
         //To display error
@@ -61,7 +81,6 @@ Router.put('/updatenote/:id', fetchuser, async (req, res) => {
 
 
     try {
-
 
         // initializing new data object as empty
         let newNote = {}
@@ -104,10 +123,9 @@ Router.delete('/deletenote/:id', fetchuser, async (req, res) => {
 
     try {
 
-
         // To fetch the note using note id provided in url // params.id gets the id from url 
         let note = await Notes.findById(req.params.id)
-       
+
         //To check note is Present or Not
         if (!note) { return res.status(401).send("Notes not found") }
 
@@ -117,8 +135,7 @@ Router.delete('/deletenote/:id', fetchuser, async (req, res) => {
 
         //To delete the note using note id
         note = await Notes.findByIdAndDelete(req.params.id)
-        res.json({title:note.title,report:"has been deleted"})
-
+        res.json({ title: note.title, report: "has been deleted" })
 
 
     } catch (error) {
