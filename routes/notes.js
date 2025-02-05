@@ -85,8 +85,8 @@ Router.put('/updatenote/:id', fetchuser, async (req, res) => {
         // initializing new data object as empty
         let newNote = {}
         // To Check if there is new data and update
-        if (title) { newNote.title = title }
-        if (description) { newNote.description = description }
+        if (title) { newNote.title = encrypt(title, secretkey) }
+        if (description) { newNote.description = encrypt(description, secretkey) }
         if (tag) { newNote.tag = tag }
 
 
